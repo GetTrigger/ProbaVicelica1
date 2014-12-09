@@ -13,11 +13,14 @@ public class Scene extends JComponent {
 
     private int Razm; // Размер загаданного слова
     private int Schet = 0; // счетчик
-    private String[] Bykvu = new String[10]; //Массив для введенных букв
+    private String[] Bykvu = new String[33]; //Массив для введенных букв
     private String[] Zagadka;//Массив - Загаданное слово
     private String[] Otvet; //Массив Отгаданное
     private int petCount = 0;
-
+    private int Verno=0;
+    private boolean Win=false; //переменная означающая победу
+    private boolean Povtor=false; // буква уже была названа
+    private boolean CheckSlovo=false; //для проверки размера одной буквы
     public Scene() {
         setPreferredSize(new Dimension(600, 400));
 
@@ -43,15 +46,22 @@ public class Scene extends JComponent {
     }
 
     private void addError() {
-        petCount++;
         repaint();
     }
 
     private int checkLetter(String One) {
-        int Picture = 0;
-        int Verno = Razm; //Стартовое значение
+        boolean Picture = false;
+        Verno = Razm; //Стартовое значение
+        if (One.length()>1){
+            CheckSlovo=true;
+            addError();
+            return 1;
+        }
+
         for (int i = 0; i < Bykvu.length; i++) { //Цикл на Проверку была ли буква названна до этого
             if (Bykvu[i].equals(One)) {
+                Povtor=true;
+                addError();
                 return 1;
             } else {
                 if (i == Bykvu.length - 1) {
@@ -63,40 +73,36 @@ public class Scene extends JComponent {
                     for (int j = 0; j < Razm; j++) {
                         if (Zagadka[j].equals(One)) {
                             Otvet[j] = One;
-                            Picture++;
+                            Picture=true;
+                            addError();
                         }
                     }
-                    if (Picture == 0) {
-                        addError(); // 2
+                    if (Picture == false) {//буква не угадана
+                        petCount++;
+                        addError(); // буквы в слове нет рисуем виселицу
                         return 2;
                     }
                     //Сравнение ответа и Загадки
                     for (int j = 0; j < Razm; j++) {
                         if (Otvet[j].equals("*")) {
                         } else {
-                            Verno--;
+                            Verno--;// уменьшение количества неизвестных букв
                         }
                     }
 
-                    for (int j = 0; j < Razm; j++) {
-                        System.out.print(Otvet[j]); // 3
-                    }
-                    System.out.println();
-
                     if (Verno == 0) {
-                        return 4;
-                    } else {
+                        Win=true;
+                        addError();
                         return 3;
                     }
                 }
-                Picture = 0;
+                Picture = false;
             }
         }
         return 0;
     }
 
     public static void main(String[] args) {
-
         //рисуем Виселицу
         JFrame frame = new JFrame("Виселица");
         final Scene scene = new Scene();
@@ -104,24 +110,16 @@ public class Scene extends JComponent {
         input.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String One = input.getText();
-                System.out.println("Text input: " + One);
                 int ok = scene.checkLetter(One);
                 // проверить букву
                 switch (ok) {
                     case 1:
-                        System.out.println("Такая Буква Уже называлась"); // todo
                         break;
                     case 2:
                         break;
                     case 3:
-                        // todo: вывести текст в окне вместо консоли
+                        //System.exit(0);
                         break;
-                    case 4:
-                        System.out.println();
-                        System.out.println("Вы Угадали"); // todo
-                        System.exit(0);
-                        break;
-
                 }
             }
         });
@@ -130,58 +128,38 @@ public class Scene extends JComponent {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
-//        while (true) {
-//
-//            System.out.println(" ");
-//            System.out.println("Введите Букву");
-//            Scanner in = new Scanner(System.in);//Ввод бкувы
-//            String One = in.nextLine();
-//
-//            int ok = scene.checkLetter(One);
-//            switch (ok) {
-//                case 1:
-//                    System.out.println("Такая Буква Уже называлась");
-//                    break;
-//                case 2:
-//                    break;
-//                case 3:
-//                    // todo: вывести текст в окне вместо консоли
-//                    break;
-//                case 4:
-//                    System.out.println();
-//                    System.out.println("Вы Угадали");
-//                    System.exit(0);
-//                    break;
-//
-//            }
-//        }
     }
-
 
     protected void paintComponent(Graphics g) {
         //       super.paintComponent(g);
-        if (petCount == 0)
-            return;
+        int SdvigSlova=200;
+        g.setColor(Color. BLACK);
+        Font fontJust = new Font("Tahoma", Font.BOLD|Font.ITALIC, 40);
+        g.setFont(fontJust);
+        for (int j = 0; j < Razm; j++) {
+            g.drawString(Otvet[j],SdvigSlova, 370);
+            SdvigSlova=SdvigSlova+40;
+        }
+
         int width = getWidth();
         int height = getHeight();
         int centerX = width / 2;
         int centerY = height / 2;
 
         if (petCount >= 1) {
-            g.setColor(Color.red);
+            g.setColor(Color.BLACK);
             g.fillRect(50, 20, 10, 300);
         } //опорная стойка
         if (petCount >= 2) {
-            g.setColor(Color.red);
+            g.setColor(Color.BLACK);
             g.fillRect(40, 20, 160, 10);
         } //вытянутая
         if (petCount >= 3) {
-            g.setColor(Color.red);
-            g.fillRect(180, 20, 10, 110);
+            g.setColor(Color.BLACK);
+            g.fillRect(180, 20, 10, 90);
         } //петля
         if (petCount >= 4) {
-            g.setColor(Color.red);
+            g.setColor(Color.BLACK);
             g.fillRect(40, 320, 30, 10);
         }//туловище
         //человечек
@@ -203,7 +181,33 @@ public class Scene extends JComponent {
         } //левая нога
         if (petCount >= 9) {
             g.setColor(Color.blue);
-            g.fillRect(186, 195, 10, 75);
-        } //правая нога
+            g.fillRect(186, 195, 10, 75);//правая нога
+
+            g.setColor(Color. RED);//вы проиграли сообщение
+            Font fontLose = new Font("Tahoma", Font.BOLD|Font.ITALIC, 40);
+            g.setFont(fontLose);
+            g.drawString("ВЫ ПРОИГРАЛИ",150, 150);
+        }
+        if (CheckSlovo==true){
+            CheckSlovo=false;
+            g.setColor(Color. BLUE);//вы ввели букву большого размера))
+            Font fontWin = new Font("Tahoma", Font.BOLD|Font.ITALIC, 30);
+            g.setFont(fontWin);
+            g.drawString("Ошибка! Введите букву",60, 50);
+        }
+        if (Povtor==true){ //сообщение о том что буква введена второй раз
+            Povtor=false;
+            g.setColor(Color. BLUE);//вы ввели букву второй раз
+            Font fontWin = new Font("Tahoma", Font.BOLD|Font.ITALIC, 30);
+            g.setFont(fontWin);
+            g.drawString("Такая Буква Уже называлась",60, 50);
+        }
+
+        if (Win==true){
+            g.setColor(Color. GREEN);//вы выйграли сообщение
+            Font fontWin = new Font("Tahoma", Font.BOLD|Font.ITALIC, 40);
+            g.setFont(fontWin);
+            g.drawString("ВЫ ВЫЙГРАЛИ",150, 150);
+        }
     }
 }
