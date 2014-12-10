@@ -51,12 +51,10 @@ public class Scene extends JComponent {
         Verno = Razm; //Стартовое значение
         if (One.length()>1){ // проверка на ввод 1 буквы
             CheckSlovo=true;
-            addError();
         }else{
 
             if (Bykvu.contains(One)) {//Цикл на Проверку была ли буква названна до этого введена буква
                 Povtor=true;
-                addError();
             } else {
                     //Занесение буквы и увелечение счетчика
                     Bykvu += One;
@@ -67,12 +65,11 @@ public class Scene extends JComponent {
                         if (Zagadka[j]==(OneChar)) {
                             Otvet[j] = OneChar;
                             Picture=true;
-                            addError();
                         }
                     }
                     if (Picture == false) {//буква не угадана
                         petCount++;
-                        addError(); // буквы в слове нет рисуем виселицу
+                     // буквы в слове нет рисуем виселицу
                     }
                     //Сравнение ответа и Загадки
                 String Zvezda = "*";
@@ -86,10 +83,10 @@ public class Scene extends JComponent {
 
                     if (Verno == 0) {
                         Win=true;
-                        addError();
                     }
             }
         }
+        addError();
     }
 
     public static void main(String[] args) {
