@@ -12,67 +12,60 @@ import java.util.Scanner;
 public class Scene extends JComponent {
 
     private int Razm; // Размер загаданного слова
-    private int Schet = 0; // счетчик
-    private String[] Bykvu = new String[33]; //Массив для введенных букв
-    private String[] Zagadka;//Массив - Загаданное слово
-    private String[] Otvet; //Массив Отгаданное
+    private String Bykvu="";//Массив для введенных букв
+    private char[] Zagadka;//Массив - Загаданное слово
+    private char[] Otvet;//Массив Отгаданное
     private int petCount = 0;
     private int Verno=0;
     private boolean Win=false; //переменная означающая победу
     private boolean Povtor=false; // буква уже была названа
     private boolean CheckSlovo=false; //для проверки размера одной буквы
+    private boolean Picture=false;
     public Scene() {
         setPreferredSize(new Dimension(600, 400));
 
-        for (int i = 0; i < Bykvu.length; i++) Bykvu[i] = "*";
-
         String[] Naborslov = {"слон", "молоко", "пчела", "птичка", "собака"};//Массив слов на Отгадывание
-        int Nomer = new Random().nextInt(4) + 1; // Выбираем слово
+        int Nomer = new Random().nextInt(5); // Выбираем слово
         String NewZagad = Naborslov[Nomer];
         System.out.println(NewZagad); //помещаем в переменную
         Razm = NewZagad.length();
 
-        Zagadka = new String[Razm];//Массив - Загаданное слово
-        Otvet = new String[Razm]; //Массив Отгаданное
+        Zagadka = new char[Razm];//Массив - Загаданное слово
+        Otvet = new char[Razm];//Массив Отгаданное
         System.out.println(Razm);
 
         for (int i = 0; i < Zagadka.length; i++) {
             char a = NewZagad.charAt(i);
-            String NotChar = Character.toString(a);
-            Zagadka[i] = NotChar;
+            Zagadka[i] = a;
         }
-
-        for (int i = 0; i < Otvet.length; i++) Otvet[i] = "*";
+        String Zvezda = "*";
+        char CharZv = Zvezda.charAt(0);
+        for (int i = 0; i < Otvet.length; i++) Otvet[i] =CharZv;
     }
 
     private void addError() {
         repaint();
     }
 
-    private int checkLetter(String One) {
-        boolean Picture = false;
+    private void checkLetter(String One) {
         Verno = Razm; //Стартовое значение
-        if (One.length()>1){
+        if (One.length()>1){ // проверка на ввод 1 буквы
             CheckSlovo=true;
             addError();
-            return 1;
-        }
+        }else{
 
-        for (int i = 0; i < Bykvu.length; i++) { //Цикл на Проверку была ли буква названна до этого
-            if (Bykvu[i].equals(One)) {
+            if (Bykvu.contains(One)) {//Цикл на Проверку была ли буква названна до этого введена буква
                 Povtor=true;
                 addError();
-                return 1;
             } else {
-                if (i == Bykvu.length - 1) {
                     //Занесение буквы и увелечение счетчика
-                    Bykvu[Schet] = One;
-                    Schet++;
+                    Bykvu += One;
 
                     //Работа со словом
+                char OneChar = One.charAt(0);
                     for (int j = 0; j < Razm; j++) {
-                        if (Zagadka[j].equals(One)) {
-                            Otvet[j] = One;
+                        if (Zagadka[j]==(OneChar)) {
+                            Otvet[j] = OneChar;
                             Picture=true;
                             addError();
                         }
@@ -80,11 +73,12 @@ public class Scene extends JComponent {
                     if (Picture == false) {//буква не угадана
                         petCount++;
                         addError(); // буквы в слове нет рисуем виселицу
-                        return 2;
                     }
                     //Сравнение ответа и Загадки
+                String Zvezda = "*";
+                char CharZv = Zvezda.charAt(0);
                     for (int j = 0; j < Razm; j++) {
-                        if (Otvet[j].equals("*")) {
+                        if (Otvet[j]==(CharZv)) {
                         } else {
                             Verno--;// уменьшение количества неизвестных букв
                         }
@@ -93,13 +87,9 @@ public class Scene extends JComponent {
                     if (Verno == 0) {
                         Win=true;
                         addError();
-                        return 3;
                     }
-                }
-                Picture = false;
             }
         }
-        return 0;
     }
 
     public static void main(String[] args) {
@@ -109,17 +99,16 @@ public class Scene extends JComponent {
         final JTextField input = new JTextField();
         input.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                scene.CheckSlovo=false;
+                scene.Picture=false;
+                scene.Povtor=false;
                 String One = input.getText();
-                int ok = scene.checkLetter(One);
-                // проверить букву
-                switch (ok) {
-                    case 1:
-                        break;
-                    case 2:
-                        break;
-                    case 3:
-                        //System.exit(0);
-                        break;
+                scene.checkLetter(One);
+                if (scene.petCount >= 9) {
+                    input.setVisible(false);
+                }
+                if (scene.Win==true){
+                    input.setVisible(false);
                 }
             }
         });
@@ -131,14 +120,13 @@ public class Scene extends JComponent {
     }
 
     protected void paintComponent(Graphics g) {
-        //       super.paintComponent(g);
         int SdvigSlova=200;
         g.setColor(Color. BLACK);
         Font fontJust = new Font("Tahoma", Font.BOLD|Font.ITALIC, 40);
         g.setFont(fontJust);
         for (int j = 0; j < Razm; j++) {
-            g.drawString(Otvet[j],SdvigSlova, 370);
-            SdvigSlova=SdvigSlova+40;
+        String displayString = new String(Otvet); // преобразование char[] в String
+        g.drawString(displayString, 200, 370);
         }
 
         int width = getWidth();
@@ -187,16 +175,15 @@ public class Scene extends JComponent {
             Font fontLose = new Font("Tahoma", Font.BOLD|Font.ITALIC, 40);
             g.setFont(fontLose);
             g.drawString("ВЫ ПРОИГРАЛИ",150, 150);
+
         }
         if (CheckSlovo==true){
-            CheckSlovo=false;
             g.setColor(Color. BLUE);//вы ввели букву большого размера))
             Font fontWin = new Font("Tahoma", Font.BOLD|Font.ITALIC, 30);
             g.setFont(fontWin);
             g.drawString("Ошибка! Введите букву",60, 50);
         }
         if (Povtor==true){ //сообщение о том что буква введена второй раз
-            Povtor=false;
             g.setColor(Color. BLUE);//вы ввели букву второй раз
             Font fontWin = new Font("Tahoma", Font.BOLD|Font.ITALIC, 30);
             g.setFont(fontWin);
