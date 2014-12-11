@@ -85,6 +85,7 @@ public class Scene extends JComponent {
         //рисуем Виселицу
         JFrame frame = new JFrame("Виселица");
         final Scene scene = new Scene();
+        final JLabel label = new JLabel("Введите букву:");
         final JTextField input = new JTextField(2);
         input.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -92,16 +93,18 @@ public class Scene extends JComponent {
                 input.setText("");
                 scene.checkLetter(One);
                 if (scene.petCount >= 9) {
+                    label.setVisible(false);
                     input.setVisible(false);
                 }
                 if (scene.Win) {
+                    label.setVisible(false);
                     input.setVisible(false);
                 }
             }
         });
         frame.add(scene, BorderLayout.CENTER);
         JPanel inputPanel = new JPanel();
-        inputPanel.add(new JLabel("Введите букву:"));
+        inputPanel.add(label);
         inputPanel.add(input);
         frame.add(inputPanel, BorderLayout.EAST);
         frame.pack();
@@ -117,7 +120,7 @@ public class Scene extends JComponent {
         g.drawString(displayString, 200, 370);
 
         if (petCount >= 1) {
-            g.setColor(Color.BLACK);
+            g.setColor(Color.black);
             g.fillRect(50, 20, 10, 300);
         } //опорная стойка
         if (petCount >= 2) {
