@@ -23,14 +23,11 @@ public class Scene extends JComponent {
 
         String[] Naborslov = {"слон", "молоко", "пчела", "птичка", "собака"};//Массив слов на Отгадывание
         int Nomer = new Random().nextInt(Naborslov.length); // Выбираем слово
-        String NewZagad = Naborslov[Nomer];
-        System.out.println(NewZagad); //помещаем в переменную
+        String NewZagad = Naborslov[Nomer];//помещаем в переменную
         int Razm = NewZagad.length();
 
         Zagadka = NewZagad.toCharArray();//Массив - Загаданное слово
         Otvet = new char[Razm];//Массив Отгаданное
-        System.out.println(Razm);
-
         Arrays.fill(Otvet, '*');
     }
 
